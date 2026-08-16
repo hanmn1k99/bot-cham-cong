@@ -2,11 +2,11 @@
   
 # 🕒 Bot Chấm Công Zalo (Ca Chính & Tăng Ca)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
-![Node](https://img.shields.io/badge/node-%3E%3D%2018.0.0-brightgreen.svg)
-![Zalo API](https://img.shields.io/badge/Zalo%20API-v2.0-0068ff.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-[![Author](https://img.shields.io/badge/author-Nguy%E1%BB%85n_Minh_H%C3%A2n-000000.svg?style=flat&logo=minutemailer&logoColor=white)](https://minhhan.net)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge&logo=github&logoColor=white)
+![Node](https://img.shields.io/badge/node-%3E%3D%2018.0.0-brightgreen.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Zalo API](https://img.shields.io/badge/Zalo%20API-v2.0-0068ff.svg?style=for-the-badge&logo=zalo&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)
+[![Author](https://img.shields.io/badge/Author-Nguy%E1%BB%85n_Minh_H%C3%A2n-000000.svg?style=for-the-badge&logo=github&logoColor=white)](https://minhhan.net)
 
 Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành cho quán Cafe, Nhà hàng, Cửa hàng tiện lợi. Quản lý điểm danh nhân viên ngay trên nền tảng Zalo với Dashboard Web quản trị hiện đại.
 
