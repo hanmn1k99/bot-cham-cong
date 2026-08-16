@@ -18,7 +18,7 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 
 ### 1. Yêu cầu hệ thống
 - Node.js (phiên bản 18 trở lên).
-- Tài khoản Zalo Official Account (Zalo OA) đã được duyệt và tạo ứng dụng trên Zalo Developers.
+- Zalo Official Account và Zalo Developer App.
 
 ### 2. Cài đặt mã nguồn
 ```bash
@@ -30,33 +30,19 @@ npm install
 Tạo file `.env` tại thư mục gốc của dự án và điền các thông tin sau:
 
 ```env
-# Port chạy ứng dụng (Mặc định: 3000)
+# Zalo OA Bot Configuration
+BOT_TOKEN=your_zalo_bot_token_here
+WEBHOOK_SECRET_TOKEN=ticket-bot-secret
+BOT_NAME=Tên Bot Của Bạn
 PORT=3000
-
-# Mật khẩu để đăng nhập vào Web Dashboard Quản trị (Thay đổi thành mật khẩu của bạn)
-WEB_PASSWORD=admin12345
-
-# URL Public của bạn (Dùng ngrok khi test local, hoặc domain thật khi chạy Production)
 PUBLIC_URL=https://your-domain.com
 
-# --- ZALO OA CONFIGURATION ---
-# Lấy từ Zalo Developers > Ứng dụng của bạn
-ZALO_APP_ID=1234567890123456789
-ZALO_APP_SECRET=your_app_secret_here
+# AI API Configuration (Có thể bỏ trống vì Bot Chấm Công không còn dùng AI)
+AI_API_KEY=
 
-# Lấy từ tài khoản Zalo OA > Quản lý liên kết ứng dụng
-ZALO_OA_ID=1234567890123456789
-ZALO_ACCESS_TOKEN=your_oa_access_token_here
-ZALO_REFRESH_TOKEN=your_oa_refresh_token_here
-
-# Token bạn tự đặt để Zalo xác thực Webhook
-WEBHOOK_SECRET_TOKEN=my_secret_token_123
-
-# ID Zalo của người quản trị (Sẽ nhận thông báo hệ thống)
-ADMIN_CHAT_ID=1111222233334444555
+# Security Configuration
+JWT_SECRET=your_super_secret_jwt_key_here
 ```
-
-> **Lưu ý**: File `.env` chứa thông tin nhạy cảm (Token, Mật khẩu), **tuyệt đối không** push file này lên GitHub (đã được cấu hình trong `.gitignore`).
 
 ### 4. Khởi chạy
 ```bash
@@ -66,13 +52,10 @@ npm run dev
 # Hoặc chạy Production
 npm start
 ```
-Hệ thống sẽ chạy trên `http://localhost:3000`. Hãy thiết lập Webhook trên Zalo Developers trỏ về `https://your-domain.com/webhook` (nhớ truyền Secret Token).
+Hệ thống sẽ chạy trên `http://localhost:3000`. Đừng quên thiết lập Webhook trên Zalo Developers trỏ về `https://your-domain.com/webhook` (kèm theo Secret Token).
 
 ## Hướng dẫn cho Admin (Web Dashboard)
 1. Truy cập `https://your-domain.com` trên trình duyệt.
-2. Đăng nhập bằng tài khoản Quản trị với mật khẩu đã đặt ở `WEB_PASSWORD`.
+2. Đăng nhập bằng tài khoản Quản trị. (Nếu chưa có tài khoản, hãy đăng ký lần đầu tại trang `/register` hoặc sử dụng tài khoản admin cũ).
 3. Bảng điều khiển sẽ hiển thị các bản ghi điểm danh (Vào / Ra) của 2 ca.
 4. Có thể nhấn vào biểu tượng ✏️ ở cột "Sửa" để điều chỉnh giờ. Quá trình này **bắt buộc** phải điền Ghi chú/Giải trình.
-
-## Cơ sở dữ liệu
-Hệ thống lưu trữ dữ liệu dưới dạng Local JSON file (`database.json`) để đảm bảo tính nhẹ gọn, dễ triển khai mà không cần cài đặt MySQL/MongoDB. File này cũng được tự động bỏ qua khi push code lên Git.
