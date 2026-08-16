@@ -133,6 +133,28 @@ router.post('/webhook', async (req, res) => {
       return;
     }
 
+    if (text.trim() === '/install') {
+      const currentAdmin = await db.getSetting('admin_chat_id');
+      if (currentAdmin) {
+        await sendZaloMessage(chatId, "⚠️ Hệ thống đã có người quản trị Zalo. Vui lòng dùng lệnh /uninstall từ tài khoản cũ trước khi cài đặt mới.");
+      } else {
+        await db.setSetting('admin_chat_id', senderId);
+        await sendZaloMessage(chatId, "✅ Cài đặt thành công! Bạn hiện là Quản trị viên Zalo của hệ thống.");
+      }
+      return;
+    }
+
+    if (text.trim() === '/uninstall') {
+      const currentAdmin = await db.getSetting('admin_chat_id');
+      if (currentAdmin === senderId) {
+        await db.setSetting('admin_chat_id', null);
+        await sendZaloMessage(chatId, "✅ Đã gỡ quyền Quản trị viên Zalo của bạn.");
+      } else {
+        await sendZaloMessage(chatId, "⚠️ Bạn không phải là Quản trị viên Zalo hiện tại của hệ thống này.");
+      }
+      return;
+    }
+
     if (text.trim() === '/report') {
       if (!isAdminUser) return;
       const reportLink = `${PUBLIC_URL}/report`;

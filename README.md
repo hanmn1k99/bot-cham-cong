@@ -46,6 +46,8 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 | `@TênBot /tangca` (Lần 1) | `Nhân viên` | Chấm **VÀO** Ca Phụ / Tăng ca |
 | `@TênBot /tangca` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Phụ / Tăng ca |
 | `@TênBot /check` | `Nhân viên` | Xem lại trạng thái điểm danh ngày hôm nay của bản thân |
+| `/install` | `Quản lý` | Kích hoạt bản thân thành Admin Zalo (nhận báo cáo) |
+| `/uninstall` | `Quản lý` | Hủy quyền Admin Zalo hiện tại |
 | `/report` | `Admin Zalo` | Lấy đường dẫn truy cập Web Dashboard quản trị |
 
 ---
@@ -75,7 +77,6 @@ Tạo một file `.env` tại thư mục gốc của dự án. File này cực k
 BOT_TOKEN=your_zalo_bot_token_here
 WEBHOOK_SECRET_TOKEN=your_zalo_webhook_secret_here
 BOT_NAME=Tên Bot Của Bạn
-ADMIN_CHAT_ID=zalo_id_cua_admin_de_nhan_bao_cao
 
 # ==========================================
 # SYSTEM CONFIGURATION
@@ -88,7 +89,7 @@ PUBLIC_URL=https://your-domain.com
 # ==========================================
 JWT_SECRET=your_super_secret_jwt_key_here
 ```
-> 💡 *Mẹo: `ADMIN_CHAT_ID` là User ID của bạn trên Zalo để bot gửi tin nhắn nhắc nhở dọn dẹp hệ thống mỗi tháng.*
+> 💡 *Mẹo: Sau khi chạy hệ thống, hãy nhắn tin `/install` cho bot trên Zalo để gán quyền Admin cho tài khoản của bạn.*
 
 ### 4. Khởi Chạy Hệ Thống
 

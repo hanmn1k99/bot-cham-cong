@@ -25,14 +25,15 @@ async function sendZaloMessage(chatId, text) {
 }
 
 async function sendToAdmins(text) {
-  const adminId = process.env.ADMIN_CHAT_ID;
+  const adminId = await db.getSetting('admin_chat_id');
   if (adminId) {
     await sendZaloMessage(adminId, text);
   }
 }
 
 async function isAdmin(senderId) {
-  return senderId === process.env.ADMIN_CHAT_ID;
+  const adminId = await db.getSetting('admin_chat_id');
+  return adminId && senderId === adminId;
 }
 
 module.exports = {
