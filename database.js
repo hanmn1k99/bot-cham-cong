@@ -251,6 +251,7 @@ module.exports = {
   getAttendanceByDate,
   getAllAttendances,
   deleteAllAttendances,
+  deleteAttendancesOlderThan,
 
   getUsers,
   getUserByUsername,

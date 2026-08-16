@@ -4,6 +4,7 @@ const db = require('../database');
 
 async function renderTableRows() {
   const attendances = await db.getAllAttendances();
+  return attendances.map((r, index) => {
      const currentChatName = r.chat_name || 'Cá nhân';
      
      // Format check in
@@ -44,10 +45,18 @@ async function renderTableRows() {
 
      const dateStr = r.date.split('-').reverse().join('/'); // YYYY-MM-DD -> DD/MM/YYYY
      
+     let totalDuration = 0;
+     if (r.check_in_time && r.check_out_time) {
+         totalDuration += (r.check_out_time - r.check_in_time);
+     }
+     if (r.overtime_in_time && r.overtime_out_time) {
+         totalDuration += (r.overtime_out_time - r.overtime_in_time);
+     }
+
      const noteText = r.note ? `<div style="font-size:12px; background:var(--bg-color); padding:6px; border-radius:4px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.note.replace(/"/g, '&quot;')}">${r.note}</div>` : `<span style="color:var(--text-muted); font-size:13px;">-</span>`;
 
      return `
-      <tr>
+      <tr data-duration="${totalDuration}">
         <td><strong>${index + 1}</strong></td>
         <td><span style="color:var(--text-muted); font-size:13px;">${dateStr}</span></td>
         <td style="font-weight: 500;">${r.name}</td>
@@ -158,6 +167,15 @@ async function getDashboardHtml(user) {
           .dropdown-content button:hover { background-color: var(--table-hover-bg); }
           .dropdown:hover .dropdown-content { display: block; }
           .empty-state { text-align: center; padding: 40px; color: var(--text-muted); display: none; }
+          .total-hours-badge { background-color: #ecfdf5; color: #065f46; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 15px; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 8px; }
+          @media print {
+              .action-bar, .controls, th:nth-child(10), td:nth-child(10) { display: none !important; }
+              body { padding: 0; background: white; color: black; }
+              .table-wrapper { box-shadow: none; border: none; }
+              table { width: 100%; border: 1px solid #000; border-collapse: collapse; }
+              th, td { border: 1px solid #000; padding: 8px; color: black; }
+              .total-hours-badge { border: 1px solid #000; background: none; color: black; }
+          }
       </style>
   </head>
   <body>
@@ -171,6 +189,7 @@ async function getDashboardHtml(user) {
               </h2>
               
               <div class="action-bar" style="display:flex; align-items:center; gap:10px;">
+                  <button class="btn-secondary" onclick="window.print()" title="In Báo Cáo"><ion-icon name="print-outline"></ion-icon></button>
                   <button class="btn-secondary" onclick="toggleDarkMode()" title="Đổi giao diện"><ion-icon name="moon-outline"></ion-icon></button>
                   <button class="btn-secondary" onclick="window.location.reload()" title="Tải lại"><ion-icon name="refresh-outline"></ion-icon></button>
                   <div class="dropdown">
@@ -183,12 +202,15 @@ async function getDashboardHtml(user) {
               </div>
           </div>
 
-          <div class="controls" style="margin-bottom: 20px;">
-              <input type="date" id="dateFilter" title="Lọc theo ngày">
-              <select id="nameFilter">
-                  <option value="">-- Tất cả nhân viên --</option>
-              </select>
-              <input type="text" id="searchInput" placeholder="Tìm kiếm tự do..." style="width: 250px;">
+          <div class="controls" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; gap: 15px;">
+                  <input type="date" id="dateFilter" title="Lọc theo ngày">
+                  <select id="nameFilter">
+                      <option value="">-- Tất cả nhân viên --</option>
+                  </select>
+                  <input type="text" id="searchInput" placeholder="Tìm kiếm tự do..." style="width: 250px;">
+              </div>
+              <div id="totalHoursDisplay" class="total-hours-badge" style="display: none;"></div>
           </div>
 
           <div class="table-wrapper">
@@ -323,6 +345,7 @@ async function getDashboardHtml(user) {
 
               const rows = getRows();
               let visibleCount = 0;
+              let totalMs = 0;
 
               for (let i = 0; i < rows.length; i++) {
                   const text = rows[i].textContent || rows[i].innerText;
@@ -341,17 +364,32 @@ async function getDashboardHtml(user) {
                   if (matchesSearch && matchesName && matchesDate) {
                       rows[i].style.display = '';
                       visibleCount++;
+                      totalMs += parseInt(rows[i].getAttribute('data-duration') || '0', 10);
                   } else {
                       rows[i].style.display = 'none';
                   }
               }
 
+              const totalHoursDisplay = document.getElementById('totalHoursDisplay');
               if (visibleCount === 0) {
                   table.style.display = 'none';
                   emptyState.style.display = 'block';
+                  totalHoursDisplay.style.display = 'none';
               } else {
                   table.style.display = '';
                   emptyState.style.display = 'none';
+                  
+                  if (selectedName !== "") {
+                      totalHoursDisplay.style.display = 'inline-flex';
+                      const hours = Math.floor(totalMs / (1000 * 60 * 60));
+                      const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
+                      totalHoursDisplay.innerHTML = '<ion-icon name="time-outline"></ion-icon> Tổng giờ: ' + hours + 'h ' + minutes + 'p';
+                  } else {
+                      totalHoursDisplay.style.display = 'inline-flex';
+                      const hours = Math.floor(totalMs / (1000 * 60 * 60));
+                      const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60));
+                      totalHoursDisplay.innerHTML = '<ion-icon name="time-outline"></ion-icon> Tổng giờ (Tất cả): ' + hours + 'h ' + minutes + 'p';
+                  }
               }
           }
 

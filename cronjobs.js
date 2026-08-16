@@ -19,15 +19,15 @@ function setupCronJobs(sendToAdmins) {
   cron.schedule('1 0 1 * *', async () => {
     console.log('Running monthly data cleanup...');
     const cutoffDate = new Date();
-    // Set to the 1st day of the previous month
-    cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+    // Set to the 1st day of the month, 3 months ago
+    cutoffDate.setMonth(cutoffDate.getMonth() - 3);
     cutoffDate.setDate(1);
     cutoffDate.setHours(0, 0, 0, 0);
 
     try {
-      const deletedCount = await db.deleteRequestsOlderThan(cutoffDate.getTime());
+      const deletedCount = await db.deleteAttendancesOlderThan(cutoffDate.getTime());
       console.log(`Deleted ${deletedCount} old requests.`);
-      await sendToAdmins(`Hệ thống đã tự động dọn dẹp ${deletedCount} dữ liệu cũ từ trước ngày ${cutoffDate.toLocaleDateString('vi-VN')}.`);
+      await sendToAdmins(`Hệ thống đã tự động dọn dẹp ${deletedCount} dữ liệu cũ từ trước ngày ${cutoffDate.toLocaleDateString('vi-VN')}. (Chính sách lưu trữ: 3 tháng)`);
     } catch (err) {
       console.error('Error during data cleanup:', err);
     }
