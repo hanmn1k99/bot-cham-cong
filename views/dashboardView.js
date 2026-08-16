@@ -95,8 +95,6 @@ async function renderTableRows() {
 async function getDashboardHtml(user) {
   const formattedRows = await renderTableRows();
   const botOrgName = 'Hệ Thống Chấm Công';
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
   
   const htmlContent = `
   <!DOCTYPE html>
@@ -184,7 +182,7 @@ async function getDashboardHtml(user) {
               <h2>
                   <div style="display:flex; flex-direction:column;">
                       <span class="screen-title" style="font-size: 20px; font-weight: 700;">${botOrgName}</span>
-                      <span class="screen-title" style="font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 3px;">Báo cáo điểm danh - Tháng ${currentMonth}/${currentYear}</span>
+                      <span class="screen-title" id="reportHeaderDate" style="font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 3px;">Báo cáo điểm danh</span>
                   </div>
               </h2>
               
@@ -204,7 +202,8 @@ async function getDashboardHtml(user) {
 
           <div class="controls" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
               <div style="display: flex; gap: 15px;">
-                  <input type="date" id="dateFilter" title="Lọc theo ngày">
+                  <input type="month" id="monthFilter" title="Lọc theo tháng">
+                  <input type="date" id="dateFilter" title="Lọc theo ngày cụ thể">
                   <select id="nameFilter">
                       <option value="">-- Tất cả nhân viên --</option>
                   </select>
@@ -304,9 +303,17 @@ async function getDashboardHtml(user) {
 
           const searchInput = document.getElementById('searchInput');
           const nameFilter = document.getElementById('nameFilter');
+          const monthFilter = document.getElementById('monthFilter');
           const dateFilter = document.getElementById('dateFilter');
           const table = document.getElementById('reportTable');
           const emptyState = document.getElementById('emptyState');
+          const reportHeaderDate = document.getElementById('reportHeaderDate');
+
+          // Set default month to current month
+          const now = new Date();
+          const currentY = now.getFullYear();
+          const currentM = String(now.getMonth() + 1).padStart(2, '0');
+          monthFilter.value = currentY + '-' + currentM;
 
           function getRows() {
               return table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
@@ -335,12 +342,21 @@ async function getDashboardHtml(user) {
           function filterData() {
               const searchText = searchInput.value.toLowerCase();
               const selectedName = nameFilter.value;
+              const selectedMonth = monthFilter.value; // YYYY-MM
               const selectedDate = dateFilter.value; // format YYYY-MM-DD
               
               let formattedDateFilter = "";
               if (selectedDate) {
                   const parts = selectedDate.split('-');
                   formattedDateFilter = parts[2] + "/" + parts[1] + "/" + parts[0];
+              }
+
+              // Update header
+              if (selectedMonth) {
+                  const parts = selectedMonth.split('-');
+                  reportHeaderDate.innerText = 'Báo cáo điểm danh - Tháng ' + parts[1] + '/' + parts[0];
+              } else {
+                  reportHeaderDate.innerText = 'Báo cáo điểm danh - Toàn thời gian';
               }
 
               const rows = getRows();
@@ -354,14 +370,21 @@ async function getDashboardHtml(user) {
                   
                   if (!nameCell || !dateCell) continue;
 
-                  const dateCellText = dateCell.textContent.trim();
+                  const dateCellText = dateCell.textContent.trim(); // DD/MM/YYYY
                   const nameCellText = nameCell.textContent.trim().toLowerCase();
                   
+                  let matchesMonth = true;
+                  if (selectedMonth) {
+                      const parts = selectedMonth.split('-'); // [YYYY, MM]
+                      const rowMonthYear = dateCellText.substring(3); // MM/YYYY
+                      matchesMonth = rowMonthYear === (parts[1] + '/' + parts[0]);
+                  }
+
                   const matchesSearch = text.toLowerCase().indexOf(searchText) > -1;
                   const matchesName = selectedName === "" || nameCellText === selectedName;
                   const matchesDate = formattedDateFilter === "" || dateCellText === formattedDateFilter;
 
-                  if (matchesSearch && matchesName && matchesDate) {
+                  if (matchesSearch && matchesName && matchesDate && matchesMonth) {
                       rows[i].style.display = '';
                       visibleCount++;
                       totalMs += parseInt(rows[i].getAttribute('data-duration') || '0', 10);
@@ -395,9 +418,17 @@ async function getDashboardHtml(user) {
 
           searchInput.addEventListener('keyup', filterData);
           nameFilter.addEventListener('change', filterData);
-          dateFilter.addEventListener('change', filterData);
+          monthFilter.addEventListener('change', () => {
+              dateFilter.value = ""; // Clear specific date when month changes
+              filterData();
+          });
+          dateFilter.addEventListener('change', () => {
+              monthFilter.value = ""; // Clear month when specific date chosen
+              filterData();
+          });
 
           updateNameDropdown();
+          filterData(); // Run initial filter to apply default month
           
           function openEditModal(id, checkIn, checkOut, checkInOT, checkOutOT, note) {
               document.getElementById('editId').value = id;
