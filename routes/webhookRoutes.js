@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../database');
 const { WEBHOOK_SECRET_TOKEN, BOT_NAME, PUBLIC_URL } = require('../config/constants');
 const { sendZaloMessage, isAdmin } = require('../services/zaloService');
-const { getBotConfig } = require('../services/botConfigService');
 
 // Zalo webhook verification (GET)
 router.get('/webhook', (req, res) => {
@@ -29,7 +28,6 @@ router.post('/webhook', async (req, res) => {
   const message = result?.message || payload?.message;
 
   if (message) {
-    const { BOT_PRONOUN_USER_DEFAULT } = await getBotConfig();
     const text = message.text || '';
     let botMention = '@bot';
     const mentionMatch = text.match(/@[^\s]+/);
