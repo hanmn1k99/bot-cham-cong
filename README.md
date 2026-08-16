@@ -114,6 +114,14 @@ Hệ thống được trang bị Web Dashboard độc lập để quản lý d�
 3. **Quản lý điểm danh:** Xem, lọc, in báo cáo và tính tổng giờ làm tại `https://your-domain.com/report`.
 
 ---
+
+## 👨‍💻 Tác giả
+
+**Nguyễn Minh Hân**  
+- Website: [minhhan.net](https://minhhan.net)  
+- Github: [@hanmn1k99](https://github.com/hanmn1k99)
+
+---
 <div align="center">
   <i>Được phát triển với ❤️ dành riêng cho quản lý đội ngũ linh hoạt.</i>
 </div>
