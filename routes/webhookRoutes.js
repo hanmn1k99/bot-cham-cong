@@ -42,8 +42,7 @@ router.post('/webhook', async (req, res) => {
     const chat = message.chat || {};
     const senderId = sender.id;
     const chatId = chat.id || senderId; 
-    const savedGroupName = await db.getGroupName(chatId);
-    const chatName = savedGroupName || chat.title || (chatId !== senderId ? 'Nhóm (Không rõ tên)' : 'Cá nhân');
+    const chatName = chat.title || (chatId !== senderId ? 'Nhóm' : 'Cá nhân');
     const timestamp = parseInt(message.date) || Date.now();
     const dateObj = new Date(timestamp);
 
@@ -54,10 +53,7 @@ router.post('/webhook', async (req, res) => {
     const year = dateObj.getFullYear();
     const dateStr = `${day}/${month}/${year}`;
 
-    // Tự động nhận diện Group
-    if (chatId !== senderId || eventName === 'group_send_text') {
-      await db.addGroup(chatId);
-    }
+
 
     const isAdminUser = await isAdmin(senderId);
 
@@ -137,59 +133,10 @@ router.post('/webhook', async (req, res) => {
       return;
     }
 
-    // Các lệnh Admin cơ bản
-    if (cleanTextForCmd === '/addgroup') {
-      if (!isAdminUser) return;
-      await db.addGroup(chatId);
-      await sendZaloMessage(chatId, "✅ Đã đăng ký nhóm này vào danh sách nhận thông báo.");
-      return;
-    }
-
-    if (cleanTextForCmd.startsWith('/setname ')) {
-      if (!isAdminUser) return;
-      const newName = cleanTextForCmd.replace('/setname ', '').trim();
-      if (newName) {
-        await db.setGroupName(chatId, newName);
-        await sendZaloMessage(chatId, `✅ Đã lưu tên nhóm này thành: ${newName}`);
-      }
-      return;
-    }
-
-    if (cleanTextForCmd === '/removegroup') {
-      if (!isAdminUser) return;
-      await db.removeGroup(chatId);
-      await sendZaloMessage(chatId, "⚠️ Đã gỡ nhóm này khỏi danh sách nhận thông báo.");
-      return;
-    }
-
-    if (text.startsWith('/thongbao ')) {
-      if (!isAdminUser) return;
-      const broadcastMsg = text.replace('/thongbao ', '').trim();
-      if (!broadcastMsg) return;
-
-      const groups = await db.getAllGroups();
-      let successCount = 0;
-      for (const groupId of groups) {
-        const res = await sendZaloMessage(groupId, "📢 THÔNG BÁO TỪ QUẢN TRỊ:\n\n" + broadcastMsg);
-        if (res && res.error === 0) successCount++;
-      }
-      await sendZaloMessage(chatId, `✅ Đã gửi thông báo đến ${successCount}/${groups.length} nhóm.`);
-      return;
-    }
-
-
-
     if (text.trim() === '/report') {
       if (!isAdminUser) return;
       const reportLink = `${PUBLIC_URL}/report`;
       await sendZaloMessage(chatId, `✅ Bảng quản trị của bạn tại:\n${reportLink}`);
-      return;
-    }
-
-    if (text.trim() === '/clean') {
-      if (!isAdminUser) return;
-      const deletedCount = await db.deleteAllAttendances();
-      await sendZaloMessage(chatId, `✅ Đã xóa ${deletedCount} lượt chấm công khỏi hệ thống.`);
       return;
     }
 

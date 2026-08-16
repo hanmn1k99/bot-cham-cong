@@ -12,7 +12,6 @@ const { getDashboardHtml } = require('./views/dashboardView');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
-const settingRoutes = require('./routes/settingRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 
 const app = express();
@@ -61,7 +60,6 @@ app.get('/report', checkAuth, async (req, res) => {
 // Mount Routes
 app.use(authRoutes);
 app.use(attendanceRoutes);
-app.use(settingRoutes);
 app.use(webhookRoutes);
 
 // Start Server

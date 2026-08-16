@@ -4,10 +4,7 @@ const db = require('../database');
 
 async function renderTableRows() {
   const attendances = await db.getAllAttendances();
-  const groupNames = await db.getAllGroupNames();
-  
-  return attendances.map((r, index) => {
-     const currentChatName = groupNames[r.chat_id] || r.chat_name || 'Cá nhân';
+     const currentChatName = r.chat_name || 'Cá nhân';
      
      // Format check in
      let checkInTime = '-';
@@ -88,8 +85,7 @@ async function renderTableRows() {
 
 async function getDashboardHtml(user) {
   const formattedRows = await renderTableRows();
-  let botOrgName = await db.getSetting('bot_org_name');
-  if (!botOrgName) botOrgName = 'Công ty TNHH Demo';
+  const botOrgName = 'Hệ Thống Chấm Công';
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
   
@@ -177,7 +173,6 @@ async function getDashboardHtml(user) {
               <div class="action-bar" style="display:flex; align-items:center; gap:10px;">
                   <button class="btn-secondary" onclick="toggleDarkMode()" title="Đổi giao diện"><ion-icon name="moon-outline"></ion-icon></button>
                   <button class="btn-secondary" onclick="window.location.reload()" title="Tải lại"><ion-icon name="refresh-outline"></ion-icon></button>
-                  <button class="btn-secondary" onclick="window.location.href='/settings'" title="Cài đặt"><ion-icon name="settings-outline"></ion-icon></button>
                   <div class="dropdown">
                       <button class="btn-secondary"><ion-icon name="person-circle-outline"></ion-icon> Tài khoản</button>
                       <div class="dropdown-content">
