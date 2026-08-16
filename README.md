@@ -1,82 +1,119 @@
-# Bot Chấm Công Zalo (Ca Chính & Ca Phụ)
+<div align="center">
+  
+# 🕒 Bot Chấm Công Zalo (Ca Chính & Tăng Ca)
 
-Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành cho quán Cafe, Cửa hàng. Hỗ trợ chấm ca chính, chấm tăng ca và theo dõi qua giao diện Web Dashboard quản trị. Phiên bản cực kỳ tinh gọn, thiết kế chỉ để làm 1 việc duy nhất: Chấm công.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
+![Node](https://img.shields.io/badge/node-%3E%3D%2018.0.0-brightgreen.svg)
+![Zalo API](https://img.shields.io/badge/Zalo%20API-v2.0-0068ff.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành cho quán Cafe, Nhà hàng, Cửa hàng tiện lợi. Quản lý điểm danh nhân viên ngay trên nền tảng Zalo với Dashboard Web quản trị hiện đại.
+
+[Tính Năng](#-tính-năng-nổi-bật) • [Cài Đặt](#-hướng-dẫn-cài-đặt) • [Sử Dụng](#-danh-sách-lệnh) • [Quản Trị](#-quản-trị-web-dashboard)
+
+</div>
 
 ---
 
-## 🚀 Các Tính Năng Nổi Bật
+## 🚀 Tính Năng Nổi Bật
 
-### 1. Dành cho Nhân viên
-- **Đăng ký định danh**: Nhận diện nhân viên theo Zalo ID.
-- **Chấm công 2 ca linh hoạt**: Hỗ trợ một phiên làm việc chính và một phiên tăng ca (Ca phụ) trong cùng một ngày.
-- **Chống gian lận / Spam**: Mỗi ngày chỉ được phép check-in và check-out 1 lần cho mỗi ca.
-- **Tự động nhận diện Tên Bot**: Bot sẽ tự động trích xuất tên gọi mà nhân viên dùng để tag (ví dụ: `@BotCafe`, `@Chấm_Công`) và sử dụng tên đó trong các thông báo hướng dẫn.
+### 🧑‍💼 Trải Nghiệm Nhân Viên (Zalo Bot)
+- **⚡ Chấm Công Nhanh Chóng**: Gõ lệnh trực tiếp trong nhóm hoặc nhắn tin riêng cho Bot.
+- **🕒 Hỗ Trợ Đa Ca**: Phân biệt rõ ràng **Ca Chính** và **Ca Phụ (Tăng ca)** trong cùng một ngày.
+- **🛡️ Chống Gian Lận**: Chỉ cho phép check-in và check-out 1 lần duy nhất cho mỗi ca trong ngày.
+- **🤖 Thông Minh**: Tự động trích xuất tên gọi của Bot (ví dụ: `@BotCafe`, `@Chấm_Công`) để hướng dẫn nhân viên cực kỳ tự nhiên.
+- **📝 Kiểm Tra Trạng Thái**: Nhân viên có thể tự tra cứu xem hôm nay mình đã chấm công lúc mấy giờ bằng lệnh `/check`.
 
-### 2. Dành cho Quản trị viên (Web Dashboard)
-- **Thiết lập ban đầu bảo mật**: Cung cấp trang `/setup` để khởi tạo tài khoản Admin và sinh mã khôi phục (Recovery Key) cho lần truy cập đầu.
-- **Khôi phục mật khẩu**: Trang `/forgot-password` cho phép đặt lại mật khẩu nếu có Recovery Key.
-- **Báo cáo chi tiết**: Xem bảng chấm công hiển thị rõ ràng 4 mốc thời gian: Giờ Vào, Giờ Ra, Vào (TC), Ra (TC).
-- **Chỉnh sửa giờ công**: Admin có quyền sửa lại giờ làm việc của nhân viên (bắt buộc phải điền Lý do/Giải trình).
-- **Xóa CSDL**: Dọn dẹp toàn bộ dữ liệu chấm công an toàn qua Dashboard.
+### 👑 Trải Nghiệm Quản Lý (Web Dashboard)
+- **📊 Bảng Điều Khiển Tinh Gọn**: Giao diện báo cáo Dark/Light mode trực quan, không dư thừa.
+- **🧮 Tự Động Tính Lương**: Hệ thống tự động tính **Tổng số giờ làm** của từng nhân viên (Ca chính + Tăng ca) từ đầu tháng tới thời điểm hiện tại.
+- **🖨️ Chế Độ In Báo Cáo**: Ẩn các nút bấm không cần thiết, tự động tối ưu hóa hiển thị để in báo cáo tính lương chỉ với 1 cú click.
+- **✏️ Chỉnh Sửa Phân Quyền**: Admin có thể can thiệp sửa giờ vào/ra (Bắt buộc kèm Ghi chú/Giải trình).
+- **🧹 Tự Động Dọn Dẹp**: Cronjob thông minh tự động xóa dữ liệu điểm danh cũ hơn 3 tháng vào ngày mùng 1 hàng tháng để tiết kiệm bộ nhớ.
 
 ---
 
 ## 💻 Danh Sách Lệnh (Zalo Commands)
 
-### Lệnh Tương Tác
-- `@TênBot /reg [Họ Tên]`: Đăng ký tài khoản nhân viên mới.
-- `@TênBot` (lần 1): Chấm **VÀO** ca chính.
-- `@TênBot` (lần 2): Chấm **RA** ca chính.
-- `@TênBot /tangca` (lần 1): Chấm **VÀO** ca phụ (tăng ca).
-- `@TênBot /tangca` (lần 2): Chấm **RA** ca phụ (tăng ca).
-- `@TênBot /check`: Xem trạng thái điểm danh hiện tại của bản thân.
-- `/report`: (Chỉ Admin) Lấy đường dẫn truy cập Web Dashboard.
+> **Lưu ý:** Thay `@TênBot` bằng tên thật của Bot khi tag trong nhóm Zalo.
+
+| Lệnh | Phân quyền | Mô tả |
+| :--- | :---: | :--- |
+| `@TênBot /reg [Họ Tên]` | `Nhân viên` | Đăng ký tài khoản hệ thống (Nhận diện theo Zalo ID) |
+| `@TênBot` (Lần 1) | `Nhân viên` | Chấm **VÀO** Ca Chính |
+| `@TênBot` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Chính |
+| `@TênBot /tangca` (Lần 1) | `Nhân viên` | Chấm **VÀO** Ca Phụ / Tăng ca |
+| `@TênBot /tangca` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Phụ / Tăng ca |
+| `@TênBot /check` | `Nhân viên` | Xem lại trạng thái điểm danh ngày hôm nay của bản thân |
+| `/report` | `Admin Zalo` | Lấy đường dẫn truy cập Web Dashboard quản trị |
 
 ---
 
 ## ⚙️ Hướng Dẫn Cài Đặt
 
-### 1. Yêu cầu hệ thống
-- Node.js (phiên bản 18 trở lên).
-- Zalo Official Account và Zalo Developer App.
+### 1. Yêu Cầu Môi Trường
+- Server chạy **Node.js** (phiên bản `v18.0.0` trở lên).
+- Tài khoản **Zalo Official Account** và **Zalo Developer App** đã cấu hình Webhook.
 
-### 2. Cài đặt mã nguồn
+### 2. Triển Khai Mã Nguồn
+Clone repository về máy chủ của bạn và cài đặt các gói phụ thuộc (Dependencies):
+
 ```bash
 git clone https://github.com/hanmn1k99/bot-cham-cong.git
 cd bot-cham-cong
 npm install
 ```
 
-### 3. Cấu hình biến môi trường (.env)
-Tạo file `.env` tại thư mục gốc của dự án và điền các thông tin sau:
+### 3. Cấu Hình Biến Môi Trường (`.env`)
+Tạo một file `.env` tại thư mục gốc của dự án. File này cực kỳ quan trọng và **KHÔNG BAO GIỜ** được push lên GitHub:
 
 ```env
-# Zalo OA Bot Configuration
+# ==========================================
+# ZALO OA BOT CONFIGURATION
+# ==========================================
 BOT_TOKEN=your_zalo_bot_token_here
-WEBHOOK_SECRET_TOKEN=ticket-bot-secret
+WEBHOOK_SECRET_TOKEN=your_zalo_webhook_secret_here
 BOT_NAME=Tên Bot Của Bạn
-PORT=3000
-PUBLIC_URL=https://your-domain.com
 ADMIN_CHAT_ID=zalo_id_cua_admin_de_nhan_bao_cao
 
-# Security Configuration
+# ==========================================
+# SYSTEM CONFIGURATION
+# ==========================================
+PORT=3000
+PUBLIC_URL=https://your-domain.com
+
+# ==========================================
+# SECURITY CONFIGURATION
+# ==========================================
 JWT_SECRET=your_super_secret_jwt_key_here
 ```
+> 💡 *Mẹo: `ADMIN_CHAT_ID` là User ID của bạn trên Zalo để bot gửi tin nhắn nhắc nhở dọn dẹp hệ thống mỗi tháng.*
 
-### 4. Khởi chạy
+### 4. Khởi Chạy Hệ Thống
+
+**Môi trường Phát triển (Development):**
 ```bash
-# Chạy ở chế độ phát triển
 npm run dev
-
-# Hoặc chạy Production
-npm start
 ```
-Hệ thống sẽ chạy trên cổng `3000`. Đừng quên thiết lập Webhook trên Zalo Developers trỏ về `https://your-domain.com/webhook` (kèm theo Secret Token).
+
+**Môi trường Thực tế (Production):**
+Sử dụng PM2 để chạy ngầm và giữ cho bot luôn hoạt động:
+```bash
+npm install -g pm2
+pm2 start index.js --name "bot-cham-cong"
+```
 
 ---
 
 ## 🔒 Quản Trị Web (Dashboard)
-1. Trong lần đầu tiên khởi chạy ứng dụng, truy cập `https://your-domain.com/setup` để **Khởi tạo tài khoản Quản trị tối cao**.
-2. Hệ thống sẽ cấp cho bạn một **Mã khôi phục (Recovery Key)**. Hãy lưu lại cẩn thận để dùng khi quên mật khẩu.
-3. Đăng nhập tại `https://your-domain.com/login`.
-4. Xem báo cáo chấm công tại `https://your-domain.com/report`.
+
+Hệ thống được trang bị Web Dashboard độc lập để quản lý dễ dàng hơn.
+
+1. **Khởi tạo (Chạy lần đầu):** Truy cập `https://your-domain.com/setup` để thiết lập tài khoản **Super Admin**. Hệ thống sẽ cấp một *Recovery Key* để bạn lấy lại mật khẩu khi cần thiết.
+2. **Đăng nhập:** Truy cập `https://your-domain.com/login`.
+3. **Quản lý điểm danh:** Xem, lọc, in báo cáo và tính tổng giờ làm tại `https://your-domain.com/report`.
+
+---
+<div align="center">
+  <i>Được phát triển với ❤️ dành riêng cho quản lý đội ngũ linh hoạt.</i>
+</div>
