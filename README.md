@@ -16,7 +16,6 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 - **Quản lý Nhóm**: Thêm/Xóa nhóm Zalo vào danh sách nhận thông báo của hệ thống.
 - **Đổi tên hiển thị Nhóm**: Đặt tên gợi nhớ cho từng nhóm chi nhánh/cửa hàng.
 - **Phát thanh (Broadcast)**: Gửi thông báo hàng loạt đến tất cả các nhóm đã đăng ký.
-- **Xem danh sách Admin**: Liệt kê các quản trị viên có quyền hạn trên Zalo.
 - **Xóa dữ liệu**: Lệnh dọn dẹp toàn bộ dữ liệu chấm công.
 
 ### 3. Web Dashboard (Giao diện Web)
@@ -43,7 +42,6 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 - `/setname [Tên nhóm]`: Đổi tên gợi nhớ cho nhóm hiện tại.
 - `/removegroup`: Gỡ nhóm hiện tại khỏi danh sách thông báo.
 - `/thongbao [Nội dung]`: Gửi tin nhắn thông báo đến toàn bộ các nhóm đã đăng ký.
-- `/admin`: Xem danh sách các Admin.
 - `/report`: Lấy đường dẫn truy cập Web Dashboard.
 - `/clean`: Xóa sạch toàn bộ lịch sử chấm công (Cẩn thận khi dùng).
 

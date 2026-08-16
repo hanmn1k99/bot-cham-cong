@@ -12,8 +12,6 @@ const { getDashboardHtml } = require('./views/dashboardView');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const userRoutes = require('./routes/userRoutes');
 const settingRoutes = require('./routes/settingRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 
@@ -63,8 +61,6 @@ app.get('/report', checkAuth, async (req, res) => {
 // Mount Routes
 app.use(authRoutes);
 app.use(attendanceRoutes);
-app.use(adminRoutes);
-app.use(userRoutes);
 app.use(settingRoutes);
 app.use(webhookRoutes);
 

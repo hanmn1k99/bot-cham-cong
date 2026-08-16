@@ -59,8 +59,7 @@ router.post('/webhook', async (req, res) => {
       await db.addGroup(chatId);
     }
 
-    const activeAdmins = await db.getAdmins();
-    const isAdminUser = activeAdmins.some(a => a.id === senderId);
+    const isAdminUser = await isAdmin(senderId);
 
     // Xử lý Lệnh đăng ký nhân viên: @bot /reg [Họ tên]
     if (cleanTextForCmd.startsWith('/reg ')) {
@@ -178,15 +177,7 @@ router.post('/webhook', async (req, res) => {
       return;
     }
 
-    if (text.trim() === '/admin') {
-      if (!isAdminUser) return;
-      let msg = "👥 DANH SÁCH ZALO ADMIN:\n------------------------------\n";
-      activeAdmins.forEach((a, idx) => {
-        msg += `${idx + 1}. ${a.name}\n`;
-      });
-      await sendZaloMessage(chatId, msg);
-      return;
-    }
+
 
     if (text.trim() === '/report') {
       if (!isAdminUser) return;

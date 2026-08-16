@@ -25,36 +25,18 @@ async function sendZaloMessage(chatId, text) {
 }
 
 async function sendToAdmins(text) {
-  const admins = await db.getAdmins();
-  for (const admin of admins) {
-    await sendZaloMessage(admin.id, text);
+  const adminId = process.env.ADMIN_CHAT_ID;
+  if (adminId) {
+    await sendZaloMessage(adminId, text);
   }
 }
 
 async function isAdmin(senderId) {
-  const admins = await db.getAdmins();
-  return admins.some(a => a.id === senderId);
-}
-
-async function isSuperAdmin(senderId) {
-  const users = await db.getUsers();
-  const linkedUser = users.find(u => u.zaloId === senderId);
-  return linkedUser && linkedUser.role === 'SUPER_ADMIN';
-}
-
-async function getWebDisplayNameForZalo(senderId, fallbackName) {
-  const users = await db.getUsers();
-  const linkedUser = users.find(u => u.zaloId === senderId);
-  if (linkedUser) {
-    return linkedUser.displayName || fallbackName;
-  }
-  return fallbackName;
+  return senderId === process.env.ADMIN_CHAT_ID;
 }
 
 module.exports = {
   sendZaloMessage,
   sendToAdmins,
-  isAdmin,
-  isSuperAdmin,
-  getWebDisplayNameForZalo
+  isAdmin
 };
