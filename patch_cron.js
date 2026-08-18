@@ -1,4 +1,6 @@
-const cron = require('node-cron');
+const fs = require('fs');
+
+const cronCode = `const cron = require('node-cron');
 const db = require('./database');
 const { sendZaloMessage } = require('./services/zaloService');
 
@@ -47,7 +49,7 @@ function setupCronJobs(sendToAdmins) {
           if (zaloId) {
             const att = await db.getAttendanceByDate(zaloId, now.getTime());
             if (!att || !att.check_in_time) {
-              await sendZaloMessage(groupId, `⚠️ CẢNH BÁO: Nhân viên ${employeeName} chưa thấy chấm công vào ${shift.name}!`);
+              await sendZaloMessage(groupId, \`⚠️ CẢNH BÁO: Nhân viên \${employeeName} chưa thấy chấm công vào \${shift.name}!\`);
             }
           }
         }
@@ -72,7 +74,7 @@ function setupCronJobs(sendToAdmins) {
             const att = await db.getAttendanceByDate(zaloId, now.getTime());
             // Nếu có chấm vào mà chưa chấm ra
             if (att && att.check_in_time && !att.check_out_time) {
-              await sendZaloMessage(groupId, `⚠️ CẢNH BÁO: Nhân viên ${employeeName} đã kết thúc ${shift.name} hơn 30 phút nhưng quên chấm ra!`);
+              await sendZaloMessage(groupId, \`⚠️ CẢNH BÁO: Nhân viên \${employeeName} đã kết thúc \${shift.name} hơn 30 phút nhưng quên chấm ra!\`);
             }
           }
         }
@@ -88,7 +90,7 @@ function setupCronJobs(sendToAdmins) {
     
     const scheduleData = await db.getSchedule(nextYearWeek);
     if (!scheduleData || Object.keys(scheduleData).length === 0) {
-      await sendToAdmins(`⚠️ BÁO CÁO: Chưa nhận được dữ liệu Lịch làm việc cho tuần tới (${nextYearWeek}). Quản lý vui lòng cập nhật lên hệ thống!`);
+      await sendToAdmins(\`⚠️ BÁO CÁO: Chưa nhận được dữ liệu Lịch làm việc cho tuần tới (\${nextYearWeek}). Quản lý vui lòng cập nhật lên hệ thống!\`);
     }
   });
 
@@ -102,8 +104,8 @@ function setupCronJobs(sendToAdmins) {
     try {
       const deletedCount = await db.deleteAttendancesOlderThan(cutoffDate.getTime());
       if (deletedCount > 0) {
-        console.log(`Deleted ${deletedCount} old records.`);
-        await sendToAdmins(`Hệ thống đã tự động dọn dẹp ${deletedCount} bản ghi chấm công cũ hơn 90 ngày (trước ${cutoffDate.toLocaleDateString('vi-VN')}).`);
+        console.log(\`Deleted \${deletedCount} old records.\`);
+        await sendToAdmins(\`Hệ thống đã tự động dọn dẹp \${deletedCount} bản ghi chấm công cũ hơn 90 ngày (trước \${cutoffDate.toLocaleDateString('vi-VN')}).\`);
       }
     } catch (err) {
       console.error('Error during data cleanup:', err);
@@ -112,3 +114,7 @@ function setupCronJobs(sendToAdmins) {
 }
 
 module.exports = setupCronJobs;
+`;
+
+fs.writeFileSync('cronjobs.js', cronCode, 'utf8');
+console.log('Overwritten cronjobs.js');

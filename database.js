@@ -13,10 +13,11 @@ function readDB() {
     const db = JSON.parse(data);
     if (!db.attendances) db.attendances = [];
     if (!db.employees) db.employees = {};
+    if (!db.schedules) db.schedules = {};
     return db;
   } catch (err) {
     console.error("Error reading database:", err);
-    return { settings: {}, attendances: [], employees: {} };
+    return { settings: {}, attendances: [], employees: {}, schedules: {} };
   }
 }
 
@@ -52,6 +53,39 @@ async function getEmployee(zaloId) {
 async function getAllEmployees() {
   const db = readDB();
   return db.employees;
+}
+
+async function deleteEmployee(zaloId, deleteHistory = false) {
+  const db = readDB();
+  if (db.employees[zaloId]) {
+    delete db.employees[zaloId];
+    if (deleteHistory) {
+      db.attendances = db.attendances.filter(a => a.zalo_id !== zaloId);
+    }
+    writeDB(db);
+    return true;
+  }
+  return false;
+}
+
+// Schedule API
+async function getSchedule(yearWeek) {
+  const db = readDB();
+  return db.schedules[yearWeek] || null;
+}
+
+async function saveSchedule(yearWeek, data) {
+  const db = readDB();
+  db.schedules[yearWeek] = data;
+  writeDB(db);
+}
+
+function getDefaultShifts() {
+  return [
+    { id: 1, name: "Ca 1", start: "06:00", end: "12:00" },
+    { id: 2, name: "Ca 2", start: "12:00", end: "18:00" },
+    { id: 3, name: "Ca 3", start: "18:00", end: "24:00" }
+  ];
 }
 
 // Attendances API
@@ -258,5 +292,10 @@ module.exports = {
   createUser,
   deleteUser,
   updateUserPassword,
-  updateUser
+  updateUser,
+
+  deleteEmployee,
+  getSchedule,
+  saveSchedule,
+  getDefaultShifts
 };

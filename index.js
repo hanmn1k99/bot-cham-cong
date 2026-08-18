@@ -13,6 +13,8 @@ const { getDashboardHtml } = require('./views/dashboardView');
 const authRoutes = require('./routes/authRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 
 const app = express();
 
@@ -61,6 +63,8 @@ app.get('/report', checkAuth, async (req, res) => {
 app.use(authRoutes);
 app.use(attendanceRoutes);
 app.use(webhookRoutes);
+app.use(scheduleRoutes);
+app.use(employeeRoutes);
 
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {

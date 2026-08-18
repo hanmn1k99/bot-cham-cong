@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('../database');
+const getNavHtml = require('./navComponent');
 
 async function renderTableRows() {
   const attendances = await db.getAllAttendances();
@@ -93,6 +94,7 @@ async function renderTableRows() {
 }
 
 async function getDashboardHtml(user) {
+    const nav = getNavHtml('report');
   const formattedRows = await renderTableRows();
   const botOrgName = 'Hệ Thống Chấm Công';
   
@@ -177,6 +179,7 @@ async function getDashboardHtml(user) {
       </style>
   </head>
   <body>
+    ${nav}
       <div class="container">
           <div class="header">
               <h2>
