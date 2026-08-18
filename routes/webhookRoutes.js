@@ -204,14 +204,17 @@ router.post('/webhook', async (req, res) => {
         
         const yearWeek = getYearWeek(dateObj);
         const scheduleData = await db.getSchedule(yearWeek) || {};
-        const employeeSchedule = scheduleData[employeeName];
+const employeesSchedule = scheduleData.employees || scheduleData;
+const employeeSchedule = employeesSchedule[employeeName];
+const shifts = scheduleData.shifts || db.getDefaultShifts();
+        
         
         if (employeeSchedule) {
           const days = ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
           const dayName = days[dateObj.getDay()];
           const shiftId = employeeSchedule[dayName];
           if (shiftId) {
-            const shifts = db.getDefaultShifts();
+            
             const shiftInfo = shifts.find(s => s.id === parseInt(shiftId));
             if (shiftInfo) {
                const [endH, endM] = shiftInfo.end.split(':').map(Number);

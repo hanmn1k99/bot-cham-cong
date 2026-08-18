@@ -12,41 +12,43 @@ function getYearWeek(d) {
 
 async function getScheduleHtml(user) {
     const nav = getNavHtml('schedule');
-    const shifts = db.getDefaultShifts();
     
     // Get schedule for current week
     const currentWeek = getYearWeek(new Date());
-    const scheduleData = await db.getSchedule(currentWeek) || {};
+    const scheduleData = await db.getSchedule(currentWeek) || { employees: {}, shifts: [] };
+    const employeesSchedule = scheduleData.employees || scheduleData;
+    const shifts = scheduleData.shifts && scheduleData.shifts.length ? scheduleData.shifts : db.getDefaultShifts();
+    const shiftText = shifts.map(s => s.name + ' (' + s.start + ' - ' + s.end + ')').join(' | ');
     
     let tableRows = '';
     const days = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
     
     let index = 1;
-    for (const [empName, schedule] of Object.entries(scheduleData)) {
+    for (const [empName, schedule] of Object.entries(employeesSchedule)) {
         let tdDays = '';
         for (const day of days) {
             const shiftId = schedule[day];
             let shiftLabel = '-';
             if (shiftId) {
                 const s = shifts.find(x => x.id == shiftId);
-                if (s) shiftLabel = \`<span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-size:12px;">\${s.name}</span>\`;
+                if (s) shiftLabel = `<span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-size:12px;">${s.name}</span>`;
             }
-            tdDays += \`<td style="text-align:center;">\${shiftLabel}</td>\`;
+            tdDays += `<td style="text-align:center;">${shiftLabel}</td>`;
         }
         
-        tableRows += \`
+        tableRows += `
         <tr>
-            <td>\${index++}</td>
-            <td style="font-weight:600;">\${empName}</td>
-            \${tdDays}
-        </tr>\`;
+            <td>${index++}</td>
+            <td style="font-weight:600;">${empName}</td>
+            ${tdDays}
+        </tr>`;
     }
 
     if (!tableRows) {
         tableRows = '<tr><td colspan="9" style="text-align:center; padding: 20px; color: var(--text-muted);">Chưa có dữ liệu lịch làm việc tuần này</td></tr>';
     }
 
-    return \`
+    return `
     <!DOCTYPE html>
     <html lang="vi">
     <head>
@@ -79,10 +81,10 @@ async function getScheduleHtml(user) {
         </style>
     </head>
     <body>
-        \${nav}
+        ${nav}
         <div class="container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2>Lịch Làm Việc (Tuần \${currentWeek.split('W')[1]})</h2>
+                <h2>Lịch Làm Việc (Tuần ${currentWeek.split('W')[1]})</h2>
                 <div style="display:flex; gap:10px;">
                     <a href="/api/schedule/template" class="btn btn-outline" download><ion-icon name="download-outline"></ion-icon> Tải Mẫu Excel</a>
                     <button class="btn" onclick="document.getElementById('uploadFile').click()"><ion-icon name="cloud-upload-outline"></ion-icon> Upload Lịch (Tuần tới)</button>
@@ -91,7 +93,7 @@ async function getScheduleHtml(user) {
             </div>
             
             <div style="margin-bottom: 20px; font-size: 13px; color: var(--text-muted);">
-                <b>Quy ước ca mặc định:</b> Ca 1 (06:00 - 12:00) | Ca 2 (12:00 - 18:00) | Ca 3 (18:00 - 24:00)
+                <b>Cấu hình ca tuần này:</b> ${shiftText}
             </div>
 
             <table>
@@ -109,7 +111,7 @@ async function getScheduleHtml(user) {
                     </tr>
                 </thead>
                 <tbody>
-                    \${tableRows}
+                    ${tableRows}
                 </tbody>
             </table>
         </div>
@@ -139,7 +141,7 @@ async function getScheduleHtml(user) {
         </script>
     </body>
     </html>
-    \`;
+    `;
 }
 
 module.exports = { getScheduleHtml };

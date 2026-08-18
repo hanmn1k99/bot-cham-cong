@@ -1,4 +1,7 @@
-const express = require('express');
+const fs = require('fs');
+
+// 1. REWRITE routes/scheduleRoutes.js
+const scheduleRoutesCode = `const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const xlsx = require('xlsx');
@@ -109,3 +112,34 @@ router.get('/api/schedule/template', checkAuth, (req, res) => {
 });
 
 module.exports = router;
+`;
+fs.writeFileSync('routes/scheduleRoutes.js', scheduleRoutesCode, 'utf8');
+
+// 2. PATCH webhookRoutes.js
+let webhookCode = fs.readFileSync('routes/webhookRoutes.js', 'utf8');
+webhookCode = webhookCode.replace(
+    'const scheduleData = await db.getSchedule(yearWeek) || {};',
+    "const scheduleData = await db.getSchedule(yearWeek) || {};\nconst employeesSchedule = scheduleData.employees || scheduleData;\nconst employeeSchedule = employeesSchedule[employeeName];\nconst shifts = scheduleData.shifts || db.getDefaultShifts();"
+);
+webhookCode = webhookCode.replace('const employeeSchedule = scheduleData[employeeName];', '');
+webhookCode = webhookCode.replace('const shifts = db.getDefaultShifts();', '');
+fs.writeFileSync('routes/webhookRoutes.js', webhookCode, 'utf8');
+
+// 3. PATCH views/scheduleView.js
+let scheduleViewCode = fs.readFileSync('views/scheduleView.js', 'utf8');
+scheduleViewCode = scheduleViewCode.replace('const shifts = db.getDefaultShifts();', '');
+scheduleViewCode = scheduleViewCode.replace(
+    'const scheduleData = await db.getSchedule(currentWeek) || {};',
+    "const scheduleData = await db.getSchedule(currentWeek) || { employees: {}, shifts: [] };\nconst employeesSchedule = scheduleData.employees || scheduleData;\nconst shifts = scheduleData.shifts && scheduleData.shifts.length ? scheduleData.shifts : db.getDefaultShifts();\nconst shiftText = shifts.map(s => s.name + ' (' + s.start + ' - ' + s.end + ')').join(' | ');"
+);
+scheduleViewCode = scheduleViewCode.replace(
+    'for (const [empName, schedule] of Object.entries(scheduleData)) {',
+    'for (const [empName, schedule] of Object.entries(employeesSchedule)) {'
+);
+scheduleViewCode = scheduleViewCode.replace(
+    '<b>Quy ước ca mặc định:</b> Ca 1 (06:00 - 12:00) | Ca 2 (12:00 - 18:00) | Ca 3 (18:00 - 24:00)',
+    '<b>Cấu hình ca tuần này:</b> ${shiftText}'
+);
+fs.writeFileSync('views/scheduleView.js', scheduleViewCode, 'utf8');
+
+console.log('Patched API and Views');
