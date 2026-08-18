@@ -2,7 +2,7 @@
   
 # 🕒 Bot Chấm Công Zalo (Ca Chính & Tăng Ca)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge&logo=github&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg?style=for-the-badge&logo=github&logoColor=white)
 ![Node](https://img.shields.io/badge/node-%3E%3D%2018.0.0-brightgreen.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Zalo API](https://img.shields.io/badge/Zalo%20API-v2.0-0068ff.svg?style=for-the-badge&logo=zalo&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)
@@ -21,16 +21,19 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 ### 🧑‍💼 Trải Nghiệm Nhân Viên (Zalo Bot)
 - **⚡ Chấm Công Nhanh Chóng**: Gõ lệnh trực tiếp trong nhóm hoặc nhắn tin riêng cho Bot.
 - **🕒 Hỗ Trợ Đa Ca**: Phân biệt rõ ràng **Ca Chính** và **Ca Phụ (Tăng ca)** trong cùng một ngày.
-- **🛡️ Chống Gian Lận**: Chỉ cho phép check-in và check-out 1 lần duy nhất cho mỗi ca trong ngày.
+- **🛡️ Chống Chấm Ra Sớm**: Hệ thống đối chiếu với lịch Excel. Nếu nhân viên về sớm hơn giờ kết thúc ca, Bot sẽ từ chối và bắt buộc nhân viên gõ lý do (VD: `@bot ra Khám bệnh`).
 - **🤖 Thông Minh**: Tự động trích xuất tên gọi của Bot (ví dụ: `@BotCafe`, `@Chấm_Công`) để hướng dẫn nhân viên cực kỳ tự nhiên.
-- **📝 Kiểm Tra Trạng Thái**: Nhân viên có thể tự tra cứu xem hôm nay mình đã chấm công lúc mấy giờ bằng lệnh `/check`.
 
-### 👑 Trải Nghiệm Quản Lý (Web Dashboard)
-- **📊 Bảng Điều Khiển Tinh Gọn**: Giao diện báo cáo Dark/Light mode trực quan, không dư thừa.
-- **🧮 Tự Động Tính Lương**: Hệ thống tự động tính **Tổng số giờ làm** của từng nhân viên (Ca chính + Tăng ca) từ đầu tháng tới thời điểm hiện tại.
-- **🖨️ Chế Độ In Báo Cáo**: Ẩn các nút bấm không cần thiết, tự động tối ưu hóa hiển thị để in báo cáo tính lương chỉ với 1 cú click.
-- **✏️ Chỉnh Sửa Phân Quyền**: Admin có thể can thiệp sửa giờ vào/ra (Bắt buộc kèm Ghi chú/Giải trình).
-- **🧹 Tự Động Dọn Dẹp**: Cronjob thông minh tự động xóa dữ liệu điểm danh cũ hơn 3 tháng vào ngày mùng 1 hàng tháng để tiết kiệm bộ nhớ.
+### 👑 Trải Nghiệm Quản Lý (Web Dashboard & Excel)
+- **📅 Quản Lý Lịch Bằng Excel**: Tải file mẫu trực tiếp trên Web. Admin tự định nghĩa Khung Giờ Ca (Ví dụ: Ca 1: 06:00-12:00, Ca 2...) và gán ca cho nhân viên ngay trên Excel. Upload 1 phát là ăn ngay!
+- **🚨 Cảnh Báo Tự Động (Group Zalo)**:
+  - **Quên chấm vào:** Đúng 1 phút sau khi ca bắt đầu, Bot réo tên những ai chưa chấm công.
+  - **Quên chấm ra:** Đúng 30 phút sau khi kết thúc ca, ai chưa về sẽ bị bêu tên.
+  - **Nhắc nhở cập nhật lịch:** Đúng 19:00 Chủ Nhật nếu chưa có file Excel cho tuần mới, Admin sẽ bị nhắc nhở.
+- **📊 Bảng Điều Khiển Tinh Gọn**: Giao diện báo cáo Dark/Light mode trực quan, lọc tổng số giờ làm theo tháng siêu chuẩn.
+- **🧹 Tự Động Dọn Dẹp Cuốn Chiếu**: Chạy ngầm lúc `00:00` mỗi ngày để tự động xóa sạch các dữ liệu điểm danh cũ hơn 90 ngày (Cơ chế giống hệt đầu ghi Camera).
+- **🖨️ Chế Độ In Báo Cáo**: Chỉ với 1 cú click, biến trang web thành bản báo cáo in giấy hoàn hảo để phát lương.
+- **❌ Xóa Nhân Sự**: Quản lý và xóa vĩnh viễn hồ sơ những nhân viên đã nghỉ việc.
 
 ---
 
@@ -42,12 +45,14 @@ Hệ thống Bot Zalo Chấm Công tích hợp tính lương theo giờ dành ch
 | :--- | :---: | :--- |
 | `@TênBot /reg [Họ Tên]` | `Nhân viên` | Đăng ký tài khoản hệ thống (Nhận diện theo Zalo ID) |
 | `@TênBot` (Lần 1) | `Nhân viên` | Chấm **VÀO** Ca Chính |
-| `@TênBot` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Chính |
+| `@TênBot` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Chính (Sẽ bị chặn nếu về sớm) |
+| `@TênBot ra [Lý do]` | `Nhân viên` | Chấm **RA** Sớm (Kèm theo lý do giải trình) |
 | `@TênBot /tangca` (Lần 1) | `Nhân viên` | Chấm **VÀO** Ca Phụ / Tăng ca |
 | `@TênBot /tangca` (Lần 2) | `Nhân viên` | Chấm **RA** Ca Phụ / Tăng ca |
 | `@TênBot /check` | `Nhân viên` | Xem lại trạng thái điểm danh ngày hôm nay của bản thân |
-| `/install` | `Quản lý` | Kích hoạt bản thân thành Admin Zalo (nhận báo cáo) |
+| `/install` | `Quản lý` | Kích hoạt bản thân thành Admin Zalo (nhận báo cáo cá nhân) |
 | `/uninstall` | `Quản lý` | Hủy quyền Admin Zalo hiện tại |
+| `/setgroup` | `Quản lý` | (Gõ trong Nhóm) Đặt nhóm hiện tại làm Group nhận cảnh báo tự động |
 | `/report` | `Admin Zalo` | Lấy đường dẫn truy cập Web Dashboard quản trị |
 
 ---
@@ -89,7 +94,7 @@ PUBLIC_URL=https://your-domain.com
 # ==========================================
 JWT_SECRET=your_super_secret_jwt_key_here
 ```
-> 💡 *Mẹo: Sau khi chạy hệ thống, hãy nhắn tin `/install` cho bot trên Zalo để gán quyền Admin cho tài khoản của bạn.*
+> 💡 *Mẹo: Sau khi chạy hệ thống, hãy nhắn tin `/install` cho bot trên Zalo cá nhân để làm Admin. Sau đó mời bot vào nhóm công ty và gõ `/setgroup` để bật cảnh báo.*
 
 ### 4. Khởi Chạy Hệ Thống
 
@@ -113,7 +118,10 @@ Hệ thống được trang bị Web Dashboard độc lập để quản lý d�
 
 1. **Khởi tạo (Chạy lần đầu):** Truy cập `https://your-domain.com/setup` để thiết lập tài khoản **Super Admin**. Hệ thống sẽ cấp một *Recovery Key* để bạn lấy lại mật khẩu khi cần thiết.
 2. **Đăng nhập:** Truy cập `https://your-domain.com/login`.
-3. **Quản lý điểm danh:** Xem, lọc, in báo cáo và tính tổng giờ làm tại `https://your-domain.com/report`.
+3. **Các tính năng trên Dashboard:**
+   - **Báo cáo (Report):** Xem tổng giờ làm, in ấn, sửa giờ vào/ra.
+   - **Lịch Làm Việc (Schedule):** Tải Template Excel về máy. Sửa lại Cấu hình ca (nếu cần), điền mã ca cho từng nhân viên và Upload lên hệ thống.
+   - **Nhân Viên (Employees):** Xem danh sách mã Zalo ID của nhân viên, xóa nhân sự khi có người nghỉ việc.
 
 ---
 
