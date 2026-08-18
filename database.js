@@ -190,6 +190,17 @@ async function deleteAllAttendances() {
   return deletedCount;
 }
 
+async function deleteAttendancesOlderThan(timestamp) {
+  const db = readDB();
+  const initialLength = db.attendances.length;
+  db.attendances = db.attendances.filter(a => a.check_in_time >= timestamp);
+  const deletedCount = initialLength - db.attendances.length;
+  if (deletedCount > 0) {
+    writeDB(db);
+  }
+  return deletedCount;
+}
+
 
 
 

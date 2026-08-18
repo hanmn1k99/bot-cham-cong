@@ -8,22 +8,22 @@ async function getEmployeeHtml(user) {
     let tableRows = '';
     let index = 1;
     for (const [zaloId, name] of Object.entries(employees)) {
-        tableRows += \`
+        tableRows += `
         <tr>
-            <td>\${index++}</td>
-            <td style="font-weight:600;">\${name}</td>
-            <td style="font-family: monospace; color: var(--text-muted);">\${zaloId}</td>
+            <td>${index++}</td>
+            <td style="font-weight:600;">${name}</td>
+            <td style="font-family: monospace; color: var(--text-muted);">${zaloId}</td>
             <td style="text-align: right;">
-                <button class="btn btn-danger" onclick="deleteEmployee('\${zaloId}', '\${name}')">Xóa Nhân Viên</button>
+                <button class="btn btn-danger" onclick="deleteEmployee('${zaloId}', '${name}')">Xóa Nhân Viên</button>
             </td>
-        </tr>\`;
+        </tr>`;
     }
 
     if (!tableRows) {
         tableRows = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">Chưa có nhân viên nào đăng ký</td></tr>';
     }
 
-    return \`
+    return `
     <!DOCTYPE html>
     <html lang="vi">
     <head>
@@ -57,7 +57,7 @@ async function getEmployeeHtml(user) {
         </style>
     </head>
     <body>
-        \${nav}
+        ${nav}
         <div class="container">
             <h2 style="margin-bottom:20px;">Danh Sách Nhân Viên</h2>
             <table>
@@ -70,7 +70,7 @@ async function getEmployeeHtml(user) {
                     </tr>
                 </thead>
                 <tbody>
-                    \${tableRows}
+                    ${tableRows}
                 </tbody>
             </table>
         </div>
@@ -101,7 +101,7 @@ async function getEmployeeHtml(user) {
         </script>
     </body>
     </html>
-    \`;
+    `;
 }
 
 module.exports = { getEmployeeHtml };
